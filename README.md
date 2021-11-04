@@ -2,9 +2,7 @@
 
 **Good Drawings**
 MDS
-
 FDA
-
 t-SNE
 
 **Bad Drawings**
