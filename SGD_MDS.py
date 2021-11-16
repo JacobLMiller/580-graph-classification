@@ -38,7 +38,7 @@ class myMDS:
             self.w = set_w(self.d,k)
             print(self.w)
         else:
-            self.w = [[ 1/math.exp(self.d[i][j]-1) if i != j else 0 for i in range(self.n)]
+            self.w = [[ 1/pow(self.d[i][j],2) if i != j else 0 for i in range(self.n)]
                         for j in range(self.n)]
 
         w_min = 1/pow(self.d_max,2)
@@ -50,7 +50,7 @@ class myMDS:
 
 
 
-    def solve(self,num_iter=1000,epsilon=1e-3,debug=False):
+    def solve(self,num_iter=15,epsilon=1e-3,debug=False):
         current_error,delta_e,step,count = 1000,1,self.eta_max,0
         #indices = [i for i in range(len(self.d))]
         indices = list(itertools.combinations(range(self.n), 2))
@@ -232,15 +232,43 @@ def set_w(d,k):
 
 
     return w
+
 def get_k_nearest(d_row,k):
-    return np.argpartition(d_row,k)[:k+1]
+    return np.argpartition(d_row,k)[:k]
+
+
+def k_nearest_embedded(X,k_theory):
+    sum = 0
+    dist_mat = np.zeros([len(X),len(X)])
+    for i in range(len(X)):
+        for j in range(len(X)):
+            if i != j:
+                dist_mat[i][j] = euclid_dist(X[i],X[j])
+            else:
+                dist_mat[i][j] = 100000
+    k_embedded = [np.zeros(k_theory[i].shape) for i in range(len(k_theory))]
+
+    for i in range(len(dist_mat)):
+        k = len(k_theory[i])
+        k_embedded[i] = np.argpartition(dist_mat[i],k)[:k]
+
+    for i in range(len(X)):
+        count_intersect = 0
+        count_union = 0
+        for j in range(len(k_theory[i])):
+            if k_theory[i][j] in k_embedded[i]:
+                count_intersect += 1
+        sum += count_intersect/(len(k_theory[i])+len(k_embedded[i])-count_intersect)
+    return sum/len(G.nodes())
+
+
 
 #Code start
 
-#G = nx.grid_graph([10,5])
+#G = nx.grid_graph([10,10])
 #G = nx.random_partition_graph([30,10,40,5], 0.8, 0.01)
 #print(G.nodes[40])
-#G = nx.drawing.nx_agraph.read_dot('input.dot')
+#G = nx.drawing.nx_agraph.read_dot('tsnet_block_grid.dot')
 #G = nx.full_rary_tree(2,100)
 #G = nx.random_tree(500)
 #g = ig.Graph.Tree(500,2)
@@ -248,9 +276,5 @@ def get_k_nearest(d_row,k):
 #G = generate_graph(100,0.5)
 
 #G = nx.drawing.nx_agraph.read_dot('input.dot')
-#d = np.array(all_pairs_shortest_path(G))/1
 
-#Y = myMDS(d,weighted=True,k=5)
-#Y.solve(30,debug=False)
-
-#output_euclidean(G,Y.X)
+#print(neighborhood_pres)
