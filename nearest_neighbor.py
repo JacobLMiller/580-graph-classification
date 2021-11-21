@@ -77,9 +77,11 @@ for i in range(len(d)):
 
 rg = 2
 
-k_theory = [np.where(d[i] <= rg) for i in range(len(d))]
-for i in range(len(k_theory)):
-    k_theory[i] = k_theory[i][0]
+k_theory = [np.where((d[i] <= rg) & (d[i] > 0))[0] for i in range(len(d))]
+print(k_theory)
+#for i in range(len(k_theory)):
+#    k_theory[i] = k_theory[i][0]
+print(k_theory)
 neighborhood_pres = k_nearest_embedded(X,k_theory)
 
 print(calc_distortion(X,d))
