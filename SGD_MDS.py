@@ -1,9 +1,7 @@
 import networkx as nx
 import numpy as np
-import igraph as ig
 import matplotlib.pyplot as plt
 #import tensorflow as tf
-import drawSvg as draw
 from math import sqrt
 import sys
 import itertools
@@ -271,7 +269,6 @@ def k_nearest_embedded(X,k_theory):
 #G = nx.drawing.nx_agraph.read_dot('tsnet_block_grid.dot')
 #G = nx.full_rary_tree(2,100)
 #G = nx.random_tree(500)
-#g = ig.Graph.Tree(500,2)
 #g.write_dot('input.dot')
 #G = generate_graph(100,0.5)
 

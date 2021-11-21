@@ -1,8 +1,9 @@
-#import graph_tool.all as gt
+import graph_tool.all as gt
 import networkx as nx
 import numpy as np
-from SGD_MDS import all_pairs_shortest_path, myMDS,output_euclidean
-from feature computation import calc_stress, calc_neighborhood, calc_edge_crossings, calc_angular_resolution, calc_edge_lengths
+from SGD_MDS import myMDS
+from feature_computation import calc_stress, calc_neighborhood, calc_edge_crossings, calc_angular_resolution, calc_edge_lengths
+from graph_functions import get_distance_matrix
 
 #For i in range(n):
     #Generate graph,
@@ -18,10 +19,11 @@ from feature computation import calc_stress, calc_neighborhood, calc_edge_crossi
 
 n = 1
 for i in range(n):
-    G = nx.random_tree(25)
+    G = gt.read("test_graph.dot")
+    print(G.edges())
 
-    d = all_pairs_shortest_path(G)
-    d = np.array(d)
+    d = get_distance_matrix(G)
+    #d = np.array(d)
 
     Y = myMDS(d,weighted=False)
     Y.solve(15)

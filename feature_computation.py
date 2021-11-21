@@ -4,6 +4,9 @@ import numpy as np
 norm = lambda x: np.linalg.norm(x,ord=2)
 
 def calc_stress(X,d):
+    """
+
+    """
     stress = 0
     for i in range(len(X)):
         for j in range(i):
@@ -11,8 +14,11 @@ def calc_stress(X,d):
     return stress
 
 def calc_neighborhood(X,d,rg = 2):
+    """
+    
+    """
     def get_k_embedded(X,rg):
-        dist_mat = [[norm(X[i]-X[j]) if for j in range(len(X))] for i in range(len(X))]
+        dist_mat = [[norm(X[i]-X[j]) if i != j else 10000 for j in range(len(X))] for i in range(len(X))]
         return np.array([np.argpartition(dist_mat[i],rg)[:rg] for i in range(len(dist_mat))])
 
     k_theory = [np.where((d[i] <= rg) & (d[i] > 0))[0] for i in range(len(d))]
@@ -27,3 +33,12 @@ def calc_neighborhood(X,d,rg = 2):
         sum += count_intersect/(len(k_theory[i])+len(k_embedded[i])-count_intersect)
 
     return sum/len(X)
+
+def calc_edge_crossings(X):
+    return 0
+
+def calc_angular_resolution(G,X):
+    return 0
+
+def calc_edge_lengths(G,X):
+    return 0
