@@ -20,3 +20,10 @@ Node overlap (trivial n^2 approach)
 **Immediate plan**
 Implement/find feature computations
 Write scripts to generate data
+
+## Dependencies
+* graph-tool https://git.skewed.de/count0/graph-tool
+* numpy
+* networkx
+* scipy
+* tensor-flow
