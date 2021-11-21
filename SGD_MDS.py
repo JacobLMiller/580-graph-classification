@@ -3,7 +3,6 @@ import numpy as np
 import igraph as ig
 import matplotlib.pyplot as plt
 #import tensorflow as tf
-import drawSvg as draw
 from math import sqrt
 import sys
 import itertools
