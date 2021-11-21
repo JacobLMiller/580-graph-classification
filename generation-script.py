@@ -2,6 +2,7 @@
 import networkx as nx
 import numpy as np
 from SGD_MDS import all_pairs_shortest_path, myMDS,output_euclidean
+from feature computation import calc_stress, calc_neighborhood, calc_edge_crossings, calc_angular_resolution, calc_edge_lengths
 
 #For i in range(n):
     #Generate graph,
@@ -28,6 +29,10 @@ for i in range(n):
     #output_euclidean(G,Y.X)
 
     #Compute all features
-    stress = Y.calc_stress()
+    stress = calc_stress(Y.X,d)
+    neighborhood = calc_neighborhood(Y.X,d)
+    edge_crossings = calc_edge_crossings(Y.X)
+    angular_resolution = calc_angular_resolution(G,Y.X)
+    avg_edge_length = calc_edge_lengths(G,Y.X)
 
     #Save
