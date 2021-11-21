@@ -19,8 +19,9 @@ from graph_functions import get_distance_matrix
 
 n = 1
 for i in range(n):
-    G = gt.read("test_graph.dot")
-    print(G.edges())
+    G = gt.load_graph("test_graph.dot")
+    for i in G.edges():
+        print(i)
 
     d = get_distance_matrix(G)
     #d = np.array(d)

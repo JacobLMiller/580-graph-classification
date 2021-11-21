@@ -20,7 +20,7 @@ def get_shortest_path_distance_matrix(g, weights=None):
 # Return the distance matrix of g, with the specified metric.
 def get_distance_matrix(g, verbose=True, weights=None):
     if verbose:
-        print('[distance_matrix] Computing distance matrix (metric: {0})'.format(distance_metric))
+        print('[distance_matrix] Computing distance matrix')
 
     X = get_shortest_path_distance_matrix(g, weights=weights)
 
