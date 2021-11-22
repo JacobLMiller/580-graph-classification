@@ -43,6 +43,9 @@ def calc_neighborhood(X,d,rg = 2):
     return sum/len(X)
 
 def calc_edge_crossings(edges, node_poses):
+    '''
+    Number of edges that cross in the graph drawing
+    '''
     Node = namedtuple("vertex", "x y")
 
     node_poses = [Node(n[0],n[1]) for n in node_poses]
