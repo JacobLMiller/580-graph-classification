@@ -4,6 +4,7 @@ import numpy as np
 from SGD_MDS import myMDS
 from feature_computation import calc_stress, calc_neighborhood, calc_edge_crossings, calc_angular_resolution, calc_edge_lengths
 from graph_functions import get_distance_matrix
+import random
 
 #For i in range(n):
     #Generate graph,
@@ -17,6 +18,10 @@ from graph_functions import get_distance_matrix
 
 #Save object
 
+def random_init(d):
+    X = [[random.uniform(-1,1),random.uniform(-1,1)] for i in range(len(d))]
+    return np.asarray(X)
+
 def draw_graph(G,X):
     # Convert layout to vertex property
     pos = G.new_vp('vector<float>')
@@ -25,6 +30,18 @@ def draw_graph(G,X):
     # Show layout on the screen
     gt.graph_draw(G, pos=pos)
 
+def layout_graph(d,verbose=False):
+
+    if random.random() < 0.8:
+        Y = myMDS(d,weighted=False)
+        Y.solve(15)
+        X = Y.X
+    else:
+        X = random_init(d)
+
+    if verbose:
+        draw_graph(G,X)
+    return X
 
 
 n = 1
@@ -35,15 +52,15 @@ for i in range(n):
     d = get_distance_matrix(G)
     #d = np.array(d)
 
-    Y = myMDS(d,weighted=False)
-    Y.solve(15)
-    draw_graph(G,Y.X)
+    X = layout_graph(d,verbose=True)
 
     #Compute all features
-    stress = calc_stress(Y.X,d)
-    neighborhood = calc_neighborhood(Y.X,d)
-    edge_crossings = calc_edge_crossings(Y.X)
-    angular_resolution = calc_angular_resolution(G,Y.X)
-    avg_edge_length = calc_edge_lengths(G.edges(),Y.X)
+    stress = calc_stress(X,d)
+    neighborhood = calc_neighborhood(X,d)
+    edge_crossings = calc_edge_crossings(X)
+    angular_resolution = calc_angular_resolution(G,X)
+    avg_edge_length = calc_edge_lengths(G.edges(),X)
+
+
 
     #Save
