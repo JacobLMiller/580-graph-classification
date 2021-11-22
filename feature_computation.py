@@ -43,12 +43,12 @@ def calc_neighborhood(X,d,rg = 2):
     return sum/len(X)
 
 def calc_edge_crossings(edges, node_poses):
-    '''
+    """
     Number of edges that cross in the graph drawing
-    '''
-    Node = namedtuple("vertex", "x y")
+    """
+    Vert = namedtuple("vertex", "x y")
 
-    node_poses = [Node(n[0],n[1]) for n in node_poses]
+    node_poses = [Vert(n[0],n[1]) for n in node_poses]
     edges = [(int(n1),int(n2)) for (n1,n2) in edges]
    
 
@@ -66,7 +66,7 @@ def calc_edge_crossings(edges, node_poses):
             line2 = lines[j]
             
             point = line1.intersection(line2)
-            #Make sure that intersection is not on boundary (happens if a node has out-degree >1)
+            #Make sure that intersection is not on boundary (always happens if a node has degree >1)
             if (not point.is_empty) and (line1.contains(point) and line2.contains(point)):
                 assert(isinstance(point, Point))
                 intersections.append(point)
