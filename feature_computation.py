@@ -43,7 +43,6 @@ def calc_neighborhood(X,d,rg = 2):
     return sum/len(X)
 
 def calc_edge_crossings(edges, node_poses):
-    print("poses",node_poses[0])
     Node = namedtuple("vertex", "x y")
 
     node_poses = [Node(n[0],n[1]) for n in node_poses]
@@ -52,11 +51,11 @@ def calc_edge_crossings(edges, node_poses):
 
     lines = list()
 
-    #
+    #Grabs the edges in terms of positions
     for edge in edges:
         n1, n2 = edge
         lines.append(LineString([(node_poses[n1].x,node_poses[n1].y), (node_poses[n2].x,node_poses[n2].y)]))
-    print("lines", len(lines))
+
     intersections = []
     for i in range(len(lines)):
         for j in range(i+1,len(lines)):
