@@ -4,7 +4,11 @@ import numpy as np
 from SGD_MDS import myMDS
 from feature_computation import calc_stress, calc_neighborhood, calc_edge_crossings, calc_angular_resolution, calc_edge_lengths
 from graph_functions import get_distance_matrix
+<<<<<<< HEAD
 import random
+=======
+from collections import namedtuple
+>>>>>>> 232bd27d74bb344b83e3955f290fec34eb776b5a
 
 #For i in range(n):
     #Generate graph,

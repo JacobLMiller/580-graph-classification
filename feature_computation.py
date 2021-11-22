@@ -1,6 +1,10 @@
+from graph_tool import VertexPropertyMap
 import graph_tool.all as gt
 import numpy as np
-
+from pprint import pprint
+from collections import namedtuple
+from shapely.geometry import LineString
+from shapely.geometry import Point
 norm = lambda x: np.linalg.norm(x,ord=2)
 
 def calc_stress(X,d):
@@ -38,8 +42,38 @@ def calc_neighborhood(X,d,rg = 2):
 
     return sum/len(X)
 
-def calc_edge_crossings(X):
-    return 0
+def calc_edge_crossings(edges, node_poses):
+    """
+    Number of edges that cross in the graph drawing
+    """
+    Vert = namedtuple("vertex", "x y")
+
+    node_poses = [Vert(n[0],n[1]) for n in node_poses]
+    edges = [(int(n1),int(n2)) for (n1,n2) in edges]
+   
+
+    lines = list()
+
+    #Grabs the edges in terms of positions
+    for edge in edges:
+        n1, n2 = edge
+        lines.append(LineString([(node_poses[n1].x,node_poses[n1].y), (node_poses[n2].x,node_poses[n2].y)]))
+
+    intersections = []
+    for i in range(len(lines)):
+        for j in range(i+1,len(lines)):
+            line1 = lines[i]
+            line2 = lines[j]
+            
+            point = line1.intersection(line2)
+            #Make sure that intersection is not on boundary (always happens if a node has degree >1)
+            #Contains is implemented in shapely and contains will return if a point or a line is contained in its interior line segment excluding border
+            if (not point.is_empty) and (line1.contains(point) and line2.contains(point)):
+                assert(isinstance(point, Point))
+                intersections.append(point)
+    
+
+    return len(intersections)
 
 def calc_angular_resolution(G,X):
     """
