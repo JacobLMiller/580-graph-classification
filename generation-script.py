@@ -18,11 +18,20 @@ from collections import namedtuple
 
 #Save object
 
+def draw_graph(G,X):
+    # Convert layout to vertex property
+    pos = G.new_vp('vector<float>')
+    pos.set_2d_array(X.T)
+
+    # Show layout on the screen
+    gt.graph_draw(G, pos=pos)
+
+
+
 n = 1
 for i in range(n):
     G = gt.load_graph("test_graph.dot")
-    for i in G.edges():
-        print(i)
+
 
     d = get_distance_matrix(G)
     #d = np.array(d)
@@ -32,12 +41,13 @@ for i in range(n):
 
     #print(Y.X)
     #output_euclidean(G,Y.X)
+    draw_graph(G,Y.X)
 
     #Compute all features
     stress = calc_stress(Y.X,d)
     neighborhood = calc_neighborhood(Y.X,d)
     edge_crossings = calc_edge_crossings(G.edges(), Y.X)
     angular_resolution = calc_angular_resolution(G,Y.X)
-    avg_edge_length = calc_edge_lengths(G,Y.X)
+    avg_edge_length = calc_edge_lengths(G.edges(),Y.X)
 
     #Save

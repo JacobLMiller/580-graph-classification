@@ -9,17 +9,21 @@ norm = lambda x: np.linalg.norm(x,ord=2)
 
 def calc_stress(X,d):
     """
-
+    How well do the pairwise distances in the embedding match the theoretic distances?
+    Closer to 0 is better.
+    Stress = \sqrt (\sum (||X_i - X_j|| - d_ij)^2)
     """
     stress = 0
     for i in range(len(X)):
         for j in range(i):
             stress += pow(norm(X[i]-X[j])-d[i][j],2)
-    return stress
+    return pow(stress,0.5)
 
 def calc_neighborhood(X,d,rg = 2):
     """
-    
+    How well do the local neighborhoods represent the theoretical neighborhoods?
+    Closer to 1 is better.
+    Measure of percision: ratio of true positives to true positives+false positives
     """
     def get_k_embedded(X,rg):
         dist_mat = [[norm(X[i]-X[j]) if i != j else 10000 for j in range(len(X))] for i in range(len(X))]
@@ -76,7 +80,20 @@ def calc_edge_crossings(edges, node_poses):
     return len(intersections)
 
 def calc_angular_resolution(G,X):
-    return 0
+    """
+    Smallest angle formed by any two edges....
+    TODO: is this correct?
+    """
+    atan2 = np.arctan2
+    mymin = 10000
+    for (i,j) in G.edges():
+        x1 = X[int(i)]
+        x2 = X[int(j)]
+        mymin = min(abs(atan2(x2[1]-x1[1],x2[0]-x1[0])),mymin)
+    return min
 
-def calc_edge_lengths(G,X):
-    return 0
+def calc_edge_lengths(E,X):
+    """
+    Returns the average edge length of edges in the drawing (should be close to 1).
+    """
+    return np.mean([norm(X[int(i)]-X[int(j)]) for (i,j) in E])
