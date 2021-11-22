@@ -6,6 +6,8 @@ from collections import namedtuple
 from shapely.geometry import LineString
 from shapely.geometry import Point
 norm = lambda x: np.linalg.norm(x,ord=2)
+choose = lambda n: np.prod([(n-(2-1))/i for i in range(1,2+1)])
+
 
 def calc_stress(X,d):
     """
@@ -16,21 +18,21 @@ def calc_stress(X,d):
     stress = 0
     for i in range(len(X)):
         for j in range(i):
-            stress += pow(norm(X[i]-X[j])-d[i][j],2)
+            stress += pow((norm(X[i]-X[j])-d[i][j])/d[i][j],2)
     return pow(stress,0.5)
 
-def calc_neighborhood(X,d,rg = 2):
+def calc_neighborhood(X,d,rg = 1):
     """
     How well do the local neighborhoods represent the theoretical neighborhoods?
     Closer to 1 is better.
     Measure of percision: ratio of true positives to true positives+false positives
     """
-    def get_k_embedded(X,rg):
+    def get_k_embedded(X,k_t):
         dist_mat = [[norm(X[i]-X[j]) if i != j else 10000 for j in range(len(X))] for i in range(len(X))]
-        return np.array([np.argpartition(dist_mat[i],rg)[:rg] for i in range(len(dist_mat))])
+        return [np.argpartition(dist_mat[i],len(k_t[i]))[:len(k_t[i])] for i in range(len(dist_mat))]
 
     k_theory = [np.where((d[i] <= rg) & (d[i] > 0))[0] for i in range(len(d))]
-    k_embedded = get_k_embedded(X,rg)
+    k_embedded = get_k_embedded(X,k_theory)
 
     sum = 0
     for i in range(len(X)):
@@ -50,7 +52,7 @@ def calc_edge_crossings(edges, node_poses):
 
     node_poses = [Vert(n[0],n[1]) for n in node_poses]
     edges = [(int(n1),int(n2)) for (n1,n2) in edges]
-   
+
 
     lines = list()
 
@@ -64,14 +66,14 @@ def calc_edge_crossings(edges, node_poses):
         for j in range(i+1,len(lines)):
             line1 = lines[i]
             line2 = lines[j]
-            
+
             point = line1.intersection(line2)
+
             #Make sure that intersection is not on boundary (always happens if a node has degree >1)
             #Contains is implemented in shapely and contains will return if a point or a line is contained in its interior line segment excluding border
             if (not point.is_empty) and (line1.contains(point) and line2.contains(point)):
                 assert(isinstance(point, Point))
                 intersections.append(point)
-    
 
     return len(intersections)
 
@@ -86,10 +88,10 @@ def calc_angular_resolution(G,X):
         x1 = X[int(i)]
         x2 = X[int(j)]
         mymin = min(abs(atan2(x2[1]-x1[1],x2[0]-x1[0])),mymin)
-    return min
+    return mymin
 
 def calc_edge_lengths(E,X):
     """
-    Returns the average edge length of edges in the drawing (should be close to 1).
+    Returns the average edge length of edges in the drawing (closer to 1 is good).
     """
     return np.mean([norm(X[int(i)]-X[int(j)]) for (i,j) in E])
