@@ -4,7 +4,7 @@ import numpy as np
 from pprint import pprint
 from collections import namedtuple
 from shapely.geometry import LineString
-
+from shapely.geometry import Point
 norm = lambda x: np.linalg.norm(x,ord=2)
 
 def calc_stress(X,d):
@@ -66,14 +66,7 @@ def calc_edge_crossings(edges, node_poses):
             point = line1.intersection(line2)
             #Make sure that intersection is not on boundary (happens if a node has out-degree >1)
             if (not point.is_empty) and (line1.contains(point) and line2.contains(point)):
-                #Case happens where overlap completely check with Jacob
-                #Edges has a case where there is (4,5) and (5,4)
-                print(i,j)
-                print(line1.coords[:])
-                print(line2.coords[:])
-                pprint(point.coords[:])
-                print("")
-                print('----')
+                assert(isinstance(point, Point))
                 intersections.append(point)
     
 
