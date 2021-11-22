@@ -67,6 +67,7 @@ def calc_edge_crossings(edges, node_poses):
             
             point = line1.intersection(line2)
             #Make sure that intersection is not on boundary (always happens if a node has degree >1)
+            #Contains is implemented in shapely and contains will return if a point or a line is contained in its interior line segment excluding border
             if (not point.is_empty) and (line1.contains(point) and line2.contains(point)):
                 assert(isinstance(point, Point))
                 intersections.append(point)
