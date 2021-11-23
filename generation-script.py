@@ -6,8 +6,9 @@ from feature_computation import calc_stress, calc_neighborhood, calc_edge_crossi
 from graph_functions import get_distance_matrix
 import random
 import pickle
+from collections import namedtuple
 
-
+random.seed(12)
 
 #For i in range(n):
     #Generate graph,
@@ -22,7 +23,7 @@ import pickle
 #Save object
 
 def random_init(d):
-    rand = random.randint
+    rand = random.uniform
     X = [[rand(-10,10),rand(-10,10)] for i in range(len(d))]
     return np.asarray(X)
 
@@ -39,7 +40,7 @@ def draw_graph(G,X,fname=None):
 
 def layout_graph(d,verbose=False):
 
-    if random.random() < 0.65:
+    if random.random() < 0.5:
         label = 1
         Y = myMDS(d,weighted=False)
         Y.solve(15)
@@ -75,7 +76,18 @@ def generate_graph():
         type = 'ring'
         G = gt.circular_graph(random.randint(5,100),2)
 
+
     return G,type
+
+feature = namedtuple("feature", ['label',
+                                'type',
+                                'stress',
+                                'neighbor',
+                                'edge_crossings',
+                                'angular_resolution',
+                                'avg_edge_length',
+                                'V',
+                                'E'])
 
 def generate_data(n,verbose=False,outfile="data/test_collection.pkl"):
     graphs = [0 for i in range(n)]
@@ -92,21 +104,23 @@ def generate_data(n,verbose=False,outfile="data/test_collection.pkl"):
             draw_graph(G,X,"test_data_" + str(i) + ".png")
 
         #Compute all features
-        Features = {
-            'label': label,
-            'type': type,
-            'stress': calc_stress(X,d),
-            'neighborhood': calc_neighborhood(X,d),
-            #'edge_crossings': calc_edge_crossings(G.edges(),X),
-            'angular_resolution': calc_angular_resolution(G,X),
-            'avg_edge_length': calc_edge_lengths(G.edges(),X),
-            '|V|': G.num_vertices(),
-            '|E|': G.num_edges()
-        }
+
+        Features = feature(label,
+                            type,
+                            calc_stress(X,d),
+                            calc_neighborhood(X,d),
+                            calc_edge_crossings(G.edges(),X),
+                            calc_angular_resolution(G,X),
+                            calc_edge_lengths(G.edges(),X),
+                            G.num_vertices(),
+                            G.num_edges()
+                        )
+
+        print(Features.edge_crossings)
 
         graphs.append((G,X,Features))
 
     with open(outfile, 'wb') as myfile:
         pickle.dump(graphs,myfile)
 
-generate_data(100,verbose=True)
+generate_data(10,verbose=True)
