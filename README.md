@@ -13,8 +13,7 @@ Random shift
 Edge crossings (line sweep should work) x  
 Stress  x
 Neighborhood preservation  x
-Angular Resolution  
-Node overlap (trivial n^2 approach)    
+Angular Resolution   
 
 
 **Immediate plan**

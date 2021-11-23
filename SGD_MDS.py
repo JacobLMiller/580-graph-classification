@@ -2,19 +2,9 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 #import tensorflow as tf
-from math import sqrt
-import sys
 import itertools
-
-from euclid_random_graph import generate_graph
-
-
 import math
 import random
-import cmath
-import copy
-import time
-import os
 
 class myMDS:
     def __init__(self,dissimilarities,k=5,weighted=False,init_pos=np.array([])):
@@ -49,24 +39,22 @@ class myMDS:
 
 
     def solve(self,num_iter=15,epsilon=1e-3,debug=False):
-        current_error,delta_e,step,count = 1000,1,self.eta_max,0
-        #indices = [i for i in range(len(self.d))]
+        step, count = self.eta_max, 0
+
         indices = list(itertools.combinations(range(self.n), 2))
         random.shuffle(indices)
-        #random.shuffle(indices)
 
-        weight = 1
+        dist = lambda x: np.linalg.norm(x,ord=2)
 
         while count < num_iter:
             for k in range(len(indices)):
-                i = indices[k][0]
-                j = indices[k][1]
+                i,j = indices[k]
                 if i > j:
                     i,j = j,i
 
                 pq = self.X[i] - self.X[j] #Vector between points
 
-                mag = geodesic(self.X[i],self.X[j])
+                mag = dist(pq)
                 r = (mag-self.d[i][j])/2 #min distance to satisfy constraint
 
                 wc = self.w[i][j]*step
@@ -79,8 +67,6 @@ class myMDS:
                 self.X[i] = self.X[i] - m
                 self.X[j] = self.X[j] + m
 
-                #save_euclidean(self.X,weight)
-                #weight += 1
 
             step = self.compute_step_size(count,num_iter)
 
@@ -234,30 +220,6 @@ def set_w(d,k):
 def get_k_nearest(d_row,k):
     return np.argpartition(d_row,k)[:k]
 
-
-def k_nearest_embedded(X,k_theory):
-    sum = 0
-    dist_mat = np.zeros([len(X),len(X)])
-    for i in range(len(X)):
-        for j in range(len(X)):
-            if i != j:
-                dist_mat[i][j] = euclid_dist(X[i],X[j])
-            else:
-                dist_mat[i][j] = 100000
-    k_embedded = [np.zeros(k_theory[i].shape) for i in range(len(k_theory))]
-
-    for i in range(len(dist_mat)):
-        k = len(k_theory[i])
-        k_embedded[i] = np.argpartition(dist_mat[i],k)[:k]
-
-    for i in range(len(X)):
-        count_intersect = 0
-        count_union = 0
-        for j in range(len(k_theory[i])):
-            if k_theory[i][j] in k_embedded[i]:
-                count_intersect += 1
-        sum += count_intersect/(len(k_theory[i])+len(k_embedded[i])-count_intersect)
-    return sum/len(G.nodes())
 
 
 

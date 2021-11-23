@@ -37,6 +37,10 @@ def calc_neighborhood(X,d,rg = 1):
     sum = 0
     for i in range(len(X)):
         count_intersect = 0
+
+        assert len(k_theory[i]) == len(k_embedded[i]), "lengths of theory and real should be the same"
+        assert len(k_theory[i]) > 0, "Should not be disconnected"
+
         for j in range(len(k_theory[i])):
             if k_theory[i][j] in k_embedded[i]:
                 count_intersect += 1
