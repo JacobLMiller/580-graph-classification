@@ -8,7 +8,17 @@ import random
 import pickle
 from collections import namedtuple
 
-random.seed(12)
+#random.seed(12)
+
+feature = namedtuple("feature", ['label',
+                                'type',
+                                'stress',
+                                'neighbor',
+                                'edge_crossings',
+                                'angular_resolution',
+                                'avg_edge_length',
+                                'V',
+                                'E'])
 
 #For i in range(n):
     #Generate graph,
@@ -40,7 +50,7 @@ def draw_graph(G,X,fname=None):
 
 def layout_graph(d,verbose=False):
 
-    if random.random() < 0.5:
+    if random.random() < 0.6:
         label = 1
         Y = myMDS(d,weighted=False)
         Y.solve(15)
@@ -64,11 +74,11 @@ def generate_graph():
 
     elif rand < 0.5:
         type = 'triangulation'
-        G,pos = gt.triangulation(np.random.rand(int_gen(100),2)*int_gen(8),type="delaunay")
+        G,pos = gt.triangulation(np.random.rand(random.randint(5,100),2)*int_gen(8),type="delaunay")
 
     elif rand < 0.75:
         type = 'tree'
-        H = nx.random_tree(int_gen(100))
+        H = nx.random_tree(random.randint(5,100))
         nx.write_graphml(H,'temp.xml')
         G = gt.load_graph('temp.xml')
 
@@ -79,15 +89,7 @@ def generate_graph():
 
     return G,type
 
-feature = namedtuple("feature", ['label',
-                                'type',
-                                'stress',
-                                'neighbor',
-                                'edge_crossings',
-                                'angular_resolution',
-                                'avg_edge_length',
-                                'V',
-                                'E'])
+
 
 def generate_data(n,verbose=False,outfile="data/test_collection.pkl"):
     graphs = [0 for i in range(n)]
@@ -116,11 +118,12 @@ def generate_data(n,verbose=False,outfile="data/test_collection.pkl"):
                             G.num_edges()
                         )
 
-        print(Features.edge_crossings)
+        graphs[i] = (G,X,Features)
 
-        graphs.append((G,X,Features))
 
     with open(outfile, 'wb') as myfile:
         pickle.dump(graphs,myfile)
 
-generate_data(10,verbose=True)
+if __name__ == "__main__":
+    generate_data(1000,verbose=False,outfile='data/training1.pkl')
+    generate_data(100,verbose=False,outfile='data/test1.pkl')

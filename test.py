@@ -1,17 +1,9 @@
 import pickle
 from collections import namedtuple
+from generation_script import feature
 
-feature = namedtuple("feature", ['label',
-                                'type',
-                                'stress',
-                                'neighbor',
-                                'edge_crossings',
-                                'angular_resolution',
-                                'avg_edge_length',
-                                'V',
-                                'E'])
 
-with open('data/test_collection.pkl', 'rb') as myfile:
+with open('data/test1.pkl', 'rb') as myfile:
     myobj = pickle.load(myfile)
 
-print(myobj)
+print(myobj[38])
