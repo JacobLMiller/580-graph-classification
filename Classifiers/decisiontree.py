@@ -49,7 +49,7 @@ clf = DecisionTreeClassifier(ccp_alpha=0.02).fit(X, y)
 #clf = neighbors.KNeighborsClassifier(5,weights='uniform').fit(X,y)
 print(clf)
 ##########################################################################
-with open('data/test1.pkl', 'rb') as myfile:
+with open('data/test2.pkl', 'rb') as myfile:
     Test = pickle.load(myfile)
 
 #

@@ -7,6 +7,7 @@ from graph_functions import get_distance_matrix
 import random
 import pickle
 from collections import namedtuple
+import math
 
 #random.seed(12)
 
@@ -82,16 +83,21 @@ def generate_graph():
         nx.write_graphml(H,'temp.xml')
         G = gt.load_graph('temp.xml')
 
+    elif rand < 0.75:
+        type = 'block'
+        H = nx.random_partition_graph([int_gen(20),int_gen(20),int_gen(20),int_gen(20),int_gen(20)],0.9,0.1)
+        nx.write_graphml(H,'temp.xml')
+        G = gt.load_graph('temp.xml')
+
     else:
         type = 'ring'
         G = gt.circular_graph(random.randint(5,100),2)
-
 
     return G,type
 
 
 
-def generate_data(n,verbose=False,outfile="data/test_collection.pkl"):
+def generate_data(n,verbose=False,add_noise=False,outfile="data/test_collection.pkl"):
     graphs = [0 for i in range(n)]
     for i in range(n):
         G,type = generate_graph()
@@ -101,8 +107,11 @@ def generate_data(n,verbose=False,outfile="data/test_collection.pkl"):
         #d = np.array(d)
 
         X,label = layout_graph(d)
+        spread = np.random.rand(1)[0]*1
+        if add_noise:
+            X += np.random.normal(size=X.shape,loc=0.0,scale=1)
 
-        if verbose:
+        if verbose or i % int(math.sqrt(n)) == 0:
             draw_graph(G,X,"test_data_" + str(i) + ".png")
 
         #Compute all features
@@ -117,6 +126,10 @@ def generate_data(n,verbose=False,outfile="data/test_collection.pkl"):
                             G.num_vertices(),
                             G.num_edges()
                         )
+        V = G.num_vertices()
+        E = G.num_edges()
+        Ratio = V/E
+        Cluster = gt.global_clustering(G)
 
         graphs[i] = (G,X,Features)
 
@@ -125,5 +138,11 @@ def generate_data(n,verbose=False,outfile="data/test_collection.pkl"):
         pickle.dump(graphs,myfile)
 
 if __name__ == "__main__":
-    generate_data(1000,verbose=False,outfile='data/training1.pkl')
-    generate_data(100,verbose=False,outfile='data/test1.pkl')
+    #generate_data(1000,verbose=False,outfile='data/training2.pkl')
+    generate_data(200,verbose=False,outfile='data/test2.pkl',add_noise=True)
+    # G = gt.lattice([random.randint(2,10),random.randint(2,10)])
+    # d = get_distance_matrix(G,verbose=False)
+    # Y = myMDS(d,weighted=False)
+    # Y.solve()
+    # Y.X += np.random.normal(size=Y.X.shape,loc=0.0,scale=0.1)
+    # draw_graph(G,Y.X)
