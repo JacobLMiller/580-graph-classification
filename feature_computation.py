@@ -8,8 +8,6 @@ from shapely.geometry import Point
 norm = lambda x: np.linalg.norm(x,ord=2)
 choose = lambda n: np.prod([(n-(2-1))/i for i in range(1,2+1)])
 
-OVERLAP_PENALTY = 5
-
 
 def calc_stress(X,d):
     """
@@ -67,25 +65,21 @@ def calc_edge_crossings(edges, node_poses):
         n1, n2 = edge
         lines.append(LineString([(node_poses[n1].x,node_poses[n1].y), (node_poses[n2].x,node_poses[n2].y)]))
 
-    num_intersect = 0
+    intersections = []
     for i in range(len(lines)):
         for j in range(i+1,len(lines)):
             line1 = lines[i]
             line2 = lines[j]
 
-            point = line1.crosses(line2)
-            # print(point)
-            # print(line1)
-            # print(line2)
-            # print('------------------------')
+            point = line1.intersection(line2)
+
             #Make sure that intersection is not on boundary (always happens if a node has degree >1)
             #Contains is implemented in shapely and contains will return if a point or a line is contained in its interior line segment excluding border
-            if line1.crosses(line2):
-                num_intersect += 1
-            elif line1.overlaps(line2):
-                num_intersect += OVERLAP_PENALTY
+            if (not point.is_empty) and (line1.contains(point) and line2.contains(point)):
+                assert(isinstance(point, Point))
+                intersections.append(point)
 
-    return num_intersect
+    return len(intersections)
 
 def calc_angular_resolution(G,X):
     """
