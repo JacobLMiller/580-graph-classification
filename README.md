@@ -26,3 +26,16 @@ Write scripts to generate data
 * networkx
 * scipy
 * tensor-flow
+
+
+Link: https://towardsdatascience.com/feature-extraction-for-graphs-625f4c5fb8cd
+|V|
+|E|
+|V|/|E|
+Clustering Coefficient
+Eigenvector Centraility?
+Degree distribution(cap node degree)... degree similarity
+Sorenson index
+
+
+{1,2,3,4,5,...n^2}
