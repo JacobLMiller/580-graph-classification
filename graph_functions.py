@@ -73,7 +73,7 @@ def get_tsnet_layout(G,d):
 
     # The actual optimization is done in the thesne module.
     Y = thesne.tsnet(
-        X, output_dims=2, random_state=1, perplexity=100, n_epochs=n,
+        X, output_dims=2, random_state=1, perplexity=1000, n_epochs=n,
         Y=Y_init,
         initial_lr=50, final_lr=50, lr_switch=n // 2,
         initial_momentum=momentum, final_momentum=momentum, momentum_switch=n // 2,

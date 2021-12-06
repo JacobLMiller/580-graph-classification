@@ -12,7 +12,26 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from generation_script import feature
 
-with open('data/training1.pkl', 'rb') as myfile:
+"""
+feature = namedtuple("feature", ['label',
+                                'type',
+                                'stress',
+                                'neighbor',
+                                'edge_crossings',
+                                'angular_resolution',
+                                'avg_edge_length',
+                                'V',
+                                'E',
+                                'degree',
+                                'degree_std',
+                                'clusters',
+                                'cluster_std'
+                                ])
+"""
+
+num_features = [2,3,7,8,9,10,11,12]
+
+with open('data/training2.pkl', 'rb') as myfile:
     Training = pickle.load(myfile)
 
 
@@ -29,12 +48,13 @@ onehot = OneHotEncoder(sparse=False)
 cats = onehot.fit_transform(cats.reshape(-1,1))
 
 
-X = arr_features[:,2:7]
+X = arr_features[:,num_features]
+
 #X = np.delete(X,2,axis=1)
 scaler = preprocessing.StandardScaler().fit(X)
 X = scaler.transform(X)
 
-X = np.hstack((cats, X))
+#X = np.hstack((cats, X))
 
 
 
@@ -42,6 +62,9 @@ print("----------------------")
 
 y = arr_features[:,0]
 
+# cats = arr_features[:,1]
+# onehot = OneHotEncoder(sparse=False)
+# y = onehot.fit_transform(cats.reshape(-1,1))
 
 #clf = DecisionTreeClassifier(ccp_alpha=0.02).fit(X, y)
 #clf = neighbors.KNeighborsClassifier(5,weights='uniform').fit(X,y)
@@ -72,10 +95,7 @@ MLPClassifier(hidden_layer_sizes=(100),
                max_fun=15000)
 """
 
-clf = MLPClassifier(hidden_layer_sizes=(10),verbose=True).fit(X,y)
-#print(clf)
-##########################################################################
-with open('data/test1.pkl', 'rb') as myfile:
+with open('data/test2.pkl', 'rb') as myfile:
     Test = pickle.load(myfile)
 
 #
@@ -95,14 +115,95 @@ onehot = OneHotEncoder(sparse=False)
 cats = onehot.fit_transform(cats.reshape(-1,1))
 
 
-X = arr_features[:,2:7]
+testX = arr_features[:,num_features]
 #X = np.delete(X,2,axis=1)
-scaler = preprocessing.StandardScaler().fit(X)
-X = scaler.transform(X)
-X = np.hstack((cats, X))
+scaler = preprocessing.StandardScaler().fit(testX)
+testX = scaler.transform(testX)
+#X = np.hstack((cats, X))
 
 
-y = arr_features[:,0]
+testy = arr_features[:,0]
 
-print(clf.score(X,y))
-D = clf.predict(X).reshape(-1,1) != y.reshape(-1,1)
+
+
+alpha = np.linspace(0.000001,0.001,100)
+learning_rate_init = np.linspace(0.0001,0.01,100)
+power_t = np.linspace(0,1,100)
+momentum = np.linspace(0,1,100)
+validation_fraction = np.linspace(0,0.5,100)
+beta_1 = np.linspace(0,0.9999999,100)
+beta_2 = np.linspace(0,0.9999999,100)
+epsilon = np.linspace(1e-10,1e-6,100)
+
+choose = np.random.choice
+
+best_model, best_score = None,0
+
+for i in range(100):
+
+
+    params = {
+                'alpha': choose(alpha),
+                'learning_rate_init': choose(learning_rate_init),
+                'power_t': choose(power_t),
+                'momentum': choose(momentum),
+                'validation_fraction': choose(validation_fraction),
+                'beta_1': choose(beta_1),
+                'beta_2': choose(beta_2),
+                'epsilon': choose(epsilon)
+             }
+
+    clf = MLPClassifier(hidden_layer_sizes=(100,100),
+                  activation='relu',
+                   solver='adam',
+                   alpha=params['alpha'],
+                   batch_size='auto',
+                   learning_rate='constant',
+                   learning_rate_init=params['learning_rate_init'],
+                   power_t=params['power_t'],
+                   max_iter=500,
+                   shuffle=True,
+                   random_state=None,
+                   tol=0.0001,
+                   verbose=False,
+                   warm_start=False,
+                   momentum=params['momentum'],
+                   nesterovs_momentum=True,
+                   early_stopping=False,
+                   validation_fraction=params['validation_fraction'],
+                   beta_1=params['beta_1'],
+                   beta_2=params['beta_2'],
+                   epsilon=params['epsilon'],
+                   n_iter_no_change=10,
+                   max_fun=15000).fit(X,y)
+
+    if clf.score(testX,testy) > best_score :
+         best_score = clf.score(testX,testy)
+         best_model = params
+         print("Updated best_score to ", best_score)
+#print(clf)
+##########################################################################
+
+
+# cats = arr_features[:,1]
+#
+# onehot = OneHotEncoder(sparse=False)
+# y = onehot.fit_transform(cats.reshape(-1,1))
+
+
+print("Classification score",clf.score(testX,testy))
+#D = clf.predict(X).reshape(-1,1) == y.reshape(-1,1)
+D = clf.predict(X).reshape(-1,1)
+count = 0
+for i in range(D.shape[0]):
+    if D[i][0] == '0':
+        count += 1
+print("Classified prob of 0",count/D.shape[0])
+
+y = y.reshape(-1,1)
+count = 0
+for i in range(y.shape[0]):
+    if y[i][0] == '0':
+        count += 1
+#print("True prob of 0",count/y.shape[0])
+#print(y)

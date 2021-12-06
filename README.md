@@ -26,3 +26,16 @@ Write scripts to generate data
 * networkx
 * scipy
 * tensor-flow
+
+
+Given a graph, determine the best algorithm to draw it.
+
+
+Tuning hyperparamaters
+Classification accuracy x noise std for each classifier
+Write report: Related work, introduction Sunday
+Monday: 3 4
+Tuesday 5 6
+
+
+k-fold validation

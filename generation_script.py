@@ -55,8 +55,11 @@ def draw_graph(G,X,fname=None):
 
 
 def layout_graph(G,d,verbose=False):
+    #0: ~20%
+    #1: ~40%
+    #2: ~40%
 
-    if random.random() < 0.6:
+    if random.random() < 0.8:
         if random.random() < 0.5 and G.num_vertices() > 20:
             label = 2
             X = get_tsnet_layout(G,d)
@@ -95,7 +98,7 @@ def generate_graph():
 
     elif rand < 0.8:
         type = 'block'
-        H = nx.random_partition_graph([int_gen(20),int_gen(20),int_gen(20),int_gen(20),int_gen(20),int_gen(20)],0.8,0.1)
+        H = nx.random_partition_graph([int_gen(20),int_gen(20),int_gen(20),int_gen(20),int_gen(20),int_gen(20)],0.8,0.01)
         G = gt.Graph(directed=False)
         G.add_vertex(n=len(H.nodes()))
         for e in H.edges():
@@ -153,14 +156,16 @@ def generate_data(n,verbose=False,add_noise=False,outfile="data/test_collection.
 
         graphs[i] = (G,X,Features)
         i += 1
+        with open(outfile, 'wb') as myfile:
+            pickle.dump(graphs,myfile)
 
 
     with open(outfile, 'wb') as myfile:
         pickle.dump(graphs,myfile)
 
 if __name__ == "__main__":
-    generate_data(1000,verbose=False,outfile='data/training2.pkl')
-    generate_data(200,verbose=False,outfile='data/test2.pkl',add_noise=True)
+    #generate_data(1000,verbose=False,outfile='data/training3.pkl')
+    generate_data(200,verbose=False,outfile='data/test2_2.pkl',add_noise=False)
     # G = gt.lattice([random.randint(2,10),random.randint(2,10)])
     # d = get_distance_matrix(G,verbose=False)
     # Y = myMDS(d,weighted=False)
