@@ -172,3 +172,5 @@ if __name__ == "__main__":
     # Y.solve()
     # Y.X += np.random.normal(size=Y.X.shape,loc=0.0,scale=0.1)
     # draw_graph(G,Y.X)
+
+

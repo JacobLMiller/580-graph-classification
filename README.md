@@ -1,5 +1,7 @@
 # 580-graph-classification
 
+Execute all scripts from the top project directory 580-graph-classificaition. Running from any other directory will lead to incorrect paths during execution.
+
 **Good Drawings**
 MDS
 FDA
