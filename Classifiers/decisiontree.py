@@ -31,7 +31,7 @@ feature = namedtuple("feature", ['label',
                                 ])
 """
 
-num_features = [2,3,7,8,9,10,11,12]
+num_features = [9,10,11,12]
 
 with open('data/training2.pkl', 'rb') as myfile:
     Training = pickle.load(myfile)
@@ -53,8 +53,8 @@ cats = onehot.fit_transform(cats.reshape(-1,1))
 X = arr_features[:,num_features]
 
 #X = np.delete(X,2,axis=1)
-scaler = preprocessing.StandardScaler().fit(X)
-X = scaler.transform(X)
+#scaler = preprocessing.StandardScaler().fit(X)
+#X = scaler.transform(X)
 
 #X = np.hstack((cats, X))
 
@@ -62,13 +62,14 @@ X = scaler.transform(X)
 
 print("----------------------")
 
-y = arr_features[:,0]
+y = arr_features[:,1]
 
 # cats = arr_features[:,1]
 # onehot = OneHotEncoder(sparse=False)
 # y = onehot.fit_transform(cats.reshape(-1,1))
 
 #clf = DecisionTreeClassifier(ccp_alpha=0.02).fit(X, y)
+
 #clf = neighbors.KNeighborsClassifier(5,weights='uniform').fit(X,y)
 """
 MLPClassifier(hidden_layer_sizes=(100),
@@ -117,11 +118,11 @@ cats = onehot.fit_transform(cats.reshape(-1,1))
 
 testX = arr_features[:,num_features]
 #X = np.delete(X,2,axis=1)
-scaler = preprocessing.StandardScaler().fit(testX)
-
-
-testX = scaler.transform(testX)
-testy = arr_features[:,0]
+# scaler = preprocessing.StandardScaler().fit(testX)
+#
+#
+# testX = scaler.transform(testX)
+testy = arr_features[:,1]
 
 #Checks if best_model has been written or not
 if not os.path.exists('data/tuned_parameters_MLPClassifier.pkl'):
@@ -187,8 +188,21 @@ else:
     with open('data/tuned_parameters_MLPClassifier.pkl', 'rb') as f:
         params = pickle.load(f)
         clf = MLPClassifier(**params).fit(X,y)
+
 #print(clf)
 ##########################################################################
+import matplotlib.pyplot as plt
+mytree = DecisionTreeClassifier(ccp_alpha=0.02).fit(X, y)
+from sklearn import tree
+
+plt.plot(np.arange(len(clf.loss_curve_)),clf.loss_curve_)
+plt.ylabel('Loss function value')
+plt.xlabel("Iteration")
+plt.show()
+plt.clf()
+tree.plot_tree(mytree)
+plt.show()
+
 
 
 # cats = arr_features[:,1]
@@ -221,24 +235,24 @@ for i in range(y.shape[0]):
 def k_fold_cross_evaluation(clf, k, X, y):
     #Grabs the f1 score for each class
     y = y.flatten()
-    kf = KFold(n_splits=k)
+    kf = KFold(n_splits=k,shuffle=True)
 
     kf.get_n_splits(X)
 
-    fscore = []
+    fscore = 0
     for train_i, test_i in kf.split(X):
         X_train, X_test = X[train_i], X[test_i]
         y_train, y_test = y[train_i], y[test_i]
         clf.fit(X_train, y_train)
         pred = clf.predict(X_test)
-        
-        if len(fscore) == 0:
-            fscore = f1_score(y_test, pred, average=None)
-        else:
-            fscore += f1_score(y_test, pred, average=None)
+
+        # if len(fscore) == 0:
+        #     fscore = f1_score(y_test, pred, average='weighted')
+        # else:
+        fscore += f1_score(y_test, pred, average='weighted')
     fscore /= k
 
-    return fscore  
+    return fscore
 print("Neural Network f1-scores per class")
 print(k_fold_cross_evaluation(clf, 10, X,y))
 #print("True prob of 0",count/y.shape[0])

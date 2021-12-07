@@ -125,7 +125,7 @@ def generate_data(n,verbose=False,add_noise=False,outfile="data/test_collection.
         X,label = layout_graph(G,d)
         spread = np.random.rand(1)[0]*1
         if add_noise:
-            X += np.random.normal(size=X.shape,loc=0.0,scale=spread)
+            X += np.random.normal(size=X.shape,loc=0.0,scale=add_noise)
 
         if verbose or i % int(math.sqrt(n)) == 0:
             draw_graph(G,X,"test_data_" + str(i) + ".png")
@@ -165,12 +165,16 @@ def generate_data(n,verbose=False,add_noise=False,outfile="data/test_collection.
 
 if __name__ == "__main__":
     #generate_data(1000,verbose=False,outfile='data/training3.pkl')
-    generate_data(200,verbose=False,outfile='data/test2_2.pkl',add_noise=False)
+    noises = np.linspace(0,5,20)
+    count = 0
+    for noise in noises:
+        if count < 4:
+            count += 1
+            continue
+        generate_data(200,verbose=False,outfile='data/noise_test' + str(noise) + '.pkl',add_noise=noise)
     # G = gt.lattice([random.randint(2,10),random.randint(2,10)])
     # d = get_distance_matrix(G,verbose=False)
     # Y = myMDS(d,weighted=False)
     # Y.solve()
     # Y.X += np.random.normal(size=Y.X.shape,loc=0.0,scale=0.1)
     # draw_graph(G,Y.X)
-
-
