@@ -11,7 +11,7 @@ import sys
 import os
 from sklearn import preprocessing
 
-from decisiontree import k_fold_cross_evaluation
+
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from generation_script import feature
@@ -58,6 +58,7 @@ def getXandY(fname):
     return X,y
 
 if __name__ == "__main__":
+    from decisiontree import k_fold_cross_evaluation
     X,y = getXandY('data/training2.pkl')
     with open('data/tuned_parameters_MLPClassifier.pkl', 'rb') as f:
         params = pickle.load(f)
