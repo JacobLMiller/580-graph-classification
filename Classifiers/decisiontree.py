@@ -11,7 +11,7 @@ import sys
 import os
 from sklearn import preprocessing
 
-#from noises import getXandY
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from generation_script import feature
@@ -55,6 +55,7 @@ feature = namedtuple("feature", ['label',
                                 ])
 """
 if __name__ == "__main__":
+    from noises import getXandY
     X,y = getXandY('data/training2.pkl')
 
     #X = np.delete(X,2,axis=1)
