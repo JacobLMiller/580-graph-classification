@@ -74,10 +74,17 @@ if __name__ == "__main__":
         print(name,scores[name])
         print(name,f1scores[name])
     import matplotlib.pyplot as plt
+    plt.suptitle("Accuracy scores")
     for score in scores.keys():
-        plt.plot(np.linspace(0,5,20), scores[score])
-    plt.show()
+        plt.plot(np.linspace(0,5,20), scores[score],label=score)
+    plt.xlabel('Standard deviation of gaussian noise')
+    plt.ylabel('Score')
+    plt.savefig('Accuracyscores.png')
     plt.clf()
     for score in f1scores.keys():
-        plt.plot(np.linspace(0,5,20),f1scores[name])
+        plt.plot(np.linspace(0,5,20),f1scores[name],label=score)
+    plt.xlabel('Standard deviation of gaussian noise')
+    plt.ylabel('F-Score')
+    plt.savefig('f1scores.png')
+    plt.clf()
     plt.show()
