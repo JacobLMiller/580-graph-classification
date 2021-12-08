@@ -10,6 +10,8 @@ import pickle
 import sys
 import os
 from sklearn import preprocessing
+
+from noises import getXandY
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from generation_script import feature
@@ -30,28 +32,8 @@ feature = namedtuple("feature", ['label',
                                 'cluster_std'
                                 ])
 """
-def get_feature_data():
-    num_features = [9,10,11,12]
 
-    with open('data/training2.pkl', 'rb') as myfile:
-        Training = pickle.load(myfile)
-
-
-    features = []
-    for i in range(len(Training)):
-        features.append(Training[i][2])
-
-    arr_features = [list(features[i]) for i in range(len(features))]
-
-    arr_features = np.asarray(arr_features)
-
-    cats = arr_features[:,1]
-    onehot = OneHotEncoder(sparse=False)
-    cats = onehot.fit_transform(cats.reshape(-1,1))
-    X = arr_features[:,num_features]
-    y = arr_features[:,1]
-    return X,y
-X,y = get_feature_data()
+X,y = getXandY('data/training2.pkl')
 num_features = [9,10,11,12]
 
 #X = np.delete(X,2,axis=1)
