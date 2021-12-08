@@ -8,6 +8,8 @@ import random
 import pickle
 from collections import namedtuple
 import math
+import modules.layout_io as layout_io
+
 
 #random.seed(12)
 
@@ -93,8 +95,10 @@ def generate_graph():
     elif rand < 0.6:
         type = 'tree'
         H = nx.random_tree(random.randint(5,100))
-        nx.write_graphml(H,'temp.xml')
-        G = gt.load_graph('temp.xml')
+        G = gt.Graph(directed=False)
+        G.add_vertex(n=len(H.nodes()))
+        for e in H.edges():
+            G.add_edge(e[0],e[1])
 
     elif rand < 0.8:
         type = 'block'
@@ -123,6 +127,7 @@ def generate_data(n,verbose=False,add_noise=False,outfile="data/test_collection.
         #d = np.array(d)
 
         X,label = layout_graph(G,d)
+        X = layout_io.normalize_layout(X)
         spread = np.random.rand(1)[0]*1
         if add_noise:
             X += np.random.normal(size=X.shape,loc=0.0,scale=add_noise)
@@ -163,12 +168,32 @@ def generate_data(n,verbose=False,add_noise=False,outfile="data/test_collection.
     with open(outfile, 'wb') as myfile:
         pickle.dump(graphs,myfile)
 
+def draw_3_grids():
+    H = nx.random_partition_graph([10,10,10,10,10],0.8,0.01)
+    G = gt.Graph(directed=False)
+    G.add_vertex(n=len(H.nodes()))
+    for e in H.edges():
+        G.add_edge(e[0],e[1])
+    d = get_distance_matrix(G,verbose=False)
+
+    # A = myMDS(d,weighted=False)
+    # A.solve()
+    # X = A.X
+
+    Y = get_tsnet_layout(G,get_distance_matrix(G,verbose=False))
+    # Z = random_init(d)
+
+    draw_graph(G,Y,'example/block_example.png')
+    #draw_graph(G,Y,'example/tsnet_example.png')
+    #draw_graph(G,Z,'example/random_example.png')
+
 if __name__ == "__main__":
-    #generate_data(1000,verbose=False,outfile='data/training3.pkl')
+    #generate_data(1000,verbose=False,outfile='data/training4.pkl')
+    # draw_3_grids()
     noises = np.linspace(0,5,20)
     count = 0
     for noise in noises:
-        if count < 4:
+        if count < 18:
             count += 1
             continue
         generate_data(200,verbose=False,outfile='data/noise_test' + str(noise) + '.pkl',add_noise=noise)
