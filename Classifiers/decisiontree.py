@@ -30,27 +30,29 @@ feature = namedtuple("feature", ['label',
                                 'cluster_std'
                                 ])
 """
+def get_feature_data():
+    num_features = [9,10,11,12]
 
+    with open('data/training2.pkl', 'rb') as myfile:
+        Training = pickle.load(myfile)
+
+
+    features = []
+    for i in range(len(Training)):
+        features.append(Training[i][2])
+
+    arr_features = [list(features[i]) for i in range(len(features))]
+
+    arr_features = np.asarray(arr_features)
+
+    cats = arr_features[:,1]
+    onehot = OneHotEncoder(sparse=False)
+    cats = onehot.fit_transform(cats.reshape(-1,1))
+    X = arr_features[:,num_features]
+    y = arr_features[:,1]
+    return X,y
+X,y = get_feature_data()
 num_features = [9,10,11,12]
-
-with open('data/training2.pkl', 'rb') as myfile:
-    Training = pickle.load(myfile)
-
-
-features = []
-for i in range(len(Training)):
-    features.append(Training[i][2])
-
-arr_features = [list(features[i]) for i in range(len(features))]
-
-arr_features = np.asarray(arr_features)
-
-cats = arr_features[:,1]
-onehot = OneHotEncoder(sparse=False)
-cats = onehot.fit_transform(cats.reshape(-1,1))
-
-
-X = arr_features[:,num_features]
 
 #X = np.delete(X,2,axis=1)
 #scaler = preprocessing.StandardScaler().fit(X)
@@ -62,7 +64,7 @@ X = arr_features[:,num_features]
 
 print("----------------------")
 
-y = arr_features[:,1]
+
 
 # cats = arr_features[:,1]
 # onehot = OneHotEncoder(sparse=False)
@@ -194,7 +196,7 @@ else:
 # import matplotlib.pyplot as plt
 # mytree = DecisionTreeClassifier(ccp_alpha=0.02).fit(X, y)
 # from sklearn import tree
-#
+
 # plt.plot(np.arange(len(clf.loss_curve_)),clf.loss_curve_)
 # plt.ylabel('Loss function value')
 # plt.xlabel("Iteration")
@@ -202,7 +204,7 @@ else:
 # plt.clf()
 # tree.plot_tree(mytree)
 # plt.show()
-#
+
 
 
 # cats = arr_features[:,1]
@@ -257,3 +259,9 @@ print("Neural Network f1-scores per class")
 print(k_fold_cross_evaluation(clf, 10, X,y))
 #print("True prob of 0",count/y.shape[0])
 #print(y)
+
+
+# def test_noise():
+#      with open('data/tuned_parameters_MLPClassifier.pkl', 'rb') as f:
+#         params = pickle.load(f)
+#         clf = MLPClassifier(**params)
