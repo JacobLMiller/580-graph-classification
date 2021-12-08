@@ -34,7 +34,6 @@ feature = namedtuple("feature", ['label',
 """
 
 X,y = getXandY('data/training2.pkl')
-num_features = [9,10,11,12]
 
 #X = np.delete(X,2,axis=1)
 #scaler = preprocessing.StandardScaler().fit(X)
@@ -82,31 +81,8 @@ MLPClassifier(hidden_layer_sizes=(100),
                max_fun=15000)
 """
 
-with open('data/test2.pkl', 'rb') as myfile:
-        Test = pickle.load(myfile)
 
-features = []
-for i in range(len(Test)):
-    features.append(Test[i][2])
-
-
-arr_features = [list(features[i]) for i in range(len(features))]
-
-
-arr_features = np.asarray(arr_features)
-
-cats = arr_features[:,1]
-onehot = OneHotEncoder(sparse=False)
-cats = onehot.fit_transform(cats.reshape(-1,1))
-
-
-testX = arr_features[:,num_features]
-#X = np.delete(X,2,axis=1)
-# scaler = preprocessing.StandardScaler().fit(testX)
-#
-#
-# testX = scaler.transform(testX)
-testy = arr_features[:,1]
+testX,testy = getXandY('data/test2.pkl')
 
 #Checks if best_model has been written or not
 if not os.path.exists('data/tuned_parameters_MLPClassifier.pkl'):
