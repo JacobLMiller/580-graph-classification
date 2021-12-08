@@ -29,7 +29,7 @@ def getXandY(fname):
     with open(fname, 'rb') as myfile:
         Training = pickle.load(myfile)
 
-    num_features = [2,3,4,5,6]
+    num_features = [2,3,4,5,6,7,8,9,10,11,12]
     features = []
     for i in range(len(Training)):
         if isinstance(Training[i],int):
@@ -41,10 +41,20 @@ def getXandY(fname):
     arr_features = np.asarray(arr_features)
 
     X = arr_features[:,num_features]
-    scaler = preprocessing.StandardScaler().fit(X)
+
+    # scaler = preprocessing.StandardScaler().fit(X)
+    # X = scaler.transform(X)
+    scaler = preprocessing.Normalizer().fit(X)
     X = scaler.transform(X)
 
-    y = arr_features[:,0]
+
+    cats = arr_features[:,1]
+    onehot = OneHotEncoder(sparse=False)
+    cats = onehot.fit_transform(cats.reshape(-1,1))
+    X = np.hstack((cats, X))
+
+
+    y = arr_features[:,1]
     return X,y
 
 if __name__ == "__main__":
@@ -60,31 +70,80 @@ if __name__ == "__main__":
     path = 'data/noise/'
     scores = {}
     f1scores = {}
+    clf = classifiers[2]
 
-    for clf in classifiers:
-        name = clf.__class__.__name__
-        scores[name] = []
-        f1scores[name] = []
-        for test in testpath:
-            with open(path+test,'rb') as f:
-                test_data = pickle.load(f)
-            testx,testy = getXandY(path+test)
-            scores[name].append(clf.score(testx,testy))
-            f1scores[name].append(k_fold_cross_evaluation(clf,5,testx,testy))
-        print(name,scores[name])
-        print(name,f1scores[name])
+    testx,testy = getXandY('data/test2.pkl')
+
+    print(clf.score(testx,testy))
+
+    # for clf in classifiers:
+    #     name = clf.__class__.__name__
+    #     scores[name] = []
+    #     f1scores[name] = []
+    #     for test in testpath:
+    #         with open(path+test,'rb') as f:
+    #             test_data = pickle.load(f)
+    #         testx,testy = getXandY(path+test)
+    #         scores[name].append(clf.score(testx,testy))
+    #         f1scores[name].append(k_fold_cross_evaluation(clf,5,testx,testy))
+    #     print(name,scores[name])
+    #     print(name,f1scores[name])
+    #
+    # import matplotlib.pyplot as plt
+    #
+    # plt.suptitle("Accuracy scores")
+    # for score in scores.keys():
+    #     plt.plot(np.linspace(0,5,20), scores[score],label=score)
+    # plt.xlabel('Standard deviation of gaussian noise')
+    # plt.ylabel('Score')
+    # plt.legend()
+    # plt.savefig('normalAccuracyscores.png')
+    # plt.clf()
+    #
+    # plt.suptitle("F scores")
+    # for score in f1scores.keys():
+    #     plt.plot(np.linspace(0,5,20),f1scores[score],label=score)
+    # plt.xlabel('Standard deviation of gaussian noise')
+    # plt.ylabel('F-Score')
+    # plt.legend()
+    # plt.savefig('normalf1scores.png')
+    # plt.clf()
     import matplotlib.pyplot as plt
-    plt.suptitle("Accuracy scores")
-    for score in scores.keys():
-        plt.plot(np.linspace(0,5,20), scores[score],label=score)
-    plt.xlabel('Standard deviation of gaussian noise')
-    plt.ylabel('Score')
-    plt.savefig('Accuracyscores.png')
-    plt.clf()
-    for score in f1scores.keys():
-        plt.plot(np.linspace(0,5,20),f1scores[name],label=score)
-    plt.xlabel('Standard deviation of gaussian noise')
-    plt.ylabel('F-Score')
-    plt.savefig('f1scores.png')
-    plt.clf()
-    plt.show()
+    from sklearn.decomposition import PCA
+    from matplotlib.lines import Line2D
+    # pca = PCA(n_components=2,svd_solver='full')
+    # pos = pca.fit_transform(X)
+    # print(y)
+    # color = [None for i in range(len(y))]
+    # for i in range(len(color)):
+    #     color[i] = 'red' if y[i] == '0' else 'blue' if y[i] == '1' else 'green'
+    #
+    # plt.scatter(pos[:,0],pos[:,1],c=color)
+    # plt.show()
+    # plt.clf()
+    pca = PCA(n_components=2,svd_solver='full')
+    pos = pca.fit_transform(X)
+
+    color = [None for i in range(len(y))]
+
+    for i in range(len(color)):
+        color[i] = 'red' if y[i] == 'lattice' else 'blue' if y[i] == 'triangulation' else 'green' if y[i] == 'tree' else 'orange' if y[i] == 'block' else 'purple'
+    # for i in range(len(color)):
+    #     color[i] = 'red' if y[i] == '0' else 'blue' if y[i] == '1' else 'green'
+
+
+    plt.scatter(pos[:,0],pos[:,1],c=color)
+
+    legend_elements = [Line2D([0], [0], color='b',linestyle="none",marker='o', label='Triangulation'),
+                   Line2D([0], [0], marker='o',linestyle="none", color='red', label='Lattice'),
+                   Line2D([0], [0], marker='o',linestyle="none", color='green', label='Tree'),
+                   Line2D([0], [0], marker='o',linestyle="none", color='orange', label='Block'),
+                   Line2D([0], [0], marker='o',linestyle="none", color='purple', label='Ring')]
+
+    # legend_elements = [Line2D([0], [0], color='b',linestyle="none",marker='o', label='MDS'),
+    #                Line2D([0], [0], marker='o',linestyle="none", color='red', label='Random'),
+    #                Line2D([0], [0], marker='o',linestyle="none", color='green', label='t-sNET')]
+    plt.suptitle("PCA of drawing features")
+    plt.legend(handles=legend_elements)
+    #plt.show()
+    plt.savefig('onlydrawing.png')
