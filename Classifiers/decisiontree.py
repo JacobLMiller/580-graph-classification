@@ -191,18 +191,18 @@ else:
 
 #print(clf)
 ##########################################################################
-import matplotlib.pyplot as plt
-mytree = DecisionTreeClassifier(ccp_alpha=0.02).fit(X, y)
-from sklearn import tree
-
-plt.plot(np.arange(len(clf.loss_curve_)),clf.loss_curve_)
-plt.ylabel('Loss function value')
-plt.xlabel("Iteration")
-plt.show()
-plt.clf()
-tree.plot_tree(mytree)
-plt.show()
-
+# import matplotlib.pyplot as plt
+# mytree = DecisionTreeClassifier(ccp_alpha=0.02).fit(X, y)
+# from sklearn import tree
+#
+# plt.plot(np.arange(len(clf.loss_curve_)),clf.loss_curve_)
+# plt.ylabel('Loss function value')
+# plt.xlabel("Iteration")
+# plt.show()
+# plt.clf()
+# tree.plot_tree(mytree)
+# plt.show()
+#
 
 
 # cats = arr_features[:,1]
