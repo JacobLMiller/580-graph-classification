@@ -2,6 +2,8 @@
 
 Execute all scripts from the top project directory 580-graph-classificaition. Running from any other directory will lead to incorrect paths during execution.
 
+Main execution tests are in the Classifiers folder
+
 **Good Drawings**
 MDS
 FDA
